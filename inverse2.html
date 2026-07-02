@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverse Proportion - Cambridge Primary Interactive Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Bubblegum+Sans&family=Azeret+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #F3F0FF;
+            --secondary: #00CEC9;
+            --accent: #FFD23F;
+            --dark: #2D3436;
+            --light: #F9F9FB;
+            --white: #FFFFFF;
+            --success: #00B894;
+            --danger: #D63031;
+            --gray: #DFE6E9;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: #e2e8f0;
+            display: grid;
+            place-items: center;
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 Canvas Frame */
+        .slide-container {
+            background-color: var(--light);
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: none; 
+            padding: 60px 80px 110px 80px;
+            flex-direction: column;
+        }
+
+        .slide-container.active { display: flex; }
+
+        /* EQUATIONS VERTICAL FRACTION CSS FIX */
+        .math-eq-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Azeret Mono', monospace;
+            font-size: 28px;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            padding: 0 5px;
+        }
+        .fraction .num { 
+            border-bottom: 3px solid var(--primary); 
+            padding: 0 10px 4px 10px; 
+            text-align: center;
+        }
+        .fraction .den { 
+            padding: 4px 10px 0 10px; 
+            text-align: center;
+        }
+        .eq-sign {
+            font-size: 32px;
+            margin: 0 5px;
+            display: inline-block;
+            align-self: center;
+        }
+
+        /* Global UI Elements */
+        h1 { font-family: 'Bubblegum Sans', cursive; font-size: 75px; color: var(--primary); margin: 0; text-shadow: 3px 3px 0px var(--white); }
+        h2 { font-family: 'Bubblegum Sans', cursive; font-size: 42px; color: var(--primary); margin: 0 0 20px 0; border-left: 8px solid var(--accent); padding-left: 20px; }
+        h3 { font-size: 24px; color: var(--dark); margin-top: 0; }
+        .card { background: white; border-radius: 20px; padding: 30px; border: 2px solid var(--gray); box-shadow: 0 10px 20px rgba(0,0,0,0.01); }
+        .btn-premium { background: var(--primary); color: white; border: none; padding: 14px 35px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-premium:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .input-premium { padding: 12px; border: 3px solid var(--gray); border-radius: 12px; font-size: 18px; outline: none; text-align: center; font-family: 'Azeret Mono', monospace; }
+        .badge-info { background: #FFEAA7; color: #D63031; font-weight: bold; padding: 5px 15px; border-radius: 20px; font-size: 14px; width: fit-content; }
+
+        /* Slide 11 Matrix Styles */
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; width: 100%; height: 420px; overflow-y: auto; }
+        .num-card { 
+            height: 85px; background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; border-radius: 14px; display: flex; align-items: center; 
+            justify-content: center; font-size: 26px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 10px rgba(108, 92, 231, 0.2); transition: 0.2s;
+        }
+        .num-card:hover { transform: translateY(-3px); }
+        .num-card.solved { background: #b2bec3 !important; transform: none; box-shadow: none; border: 3px solid var(--success); }
+        .num-card.active-card { border: 5px solid var(--accent); transform: scale(0.95); }
+        .focus-panel { background: white; border-radius: 20px; border: 2px solid var(--gray); padding: 25px; width: 100%; display: flex; flex-direction: column; height: 440px; }
+
+        /* Footer Navigation controls - FIXED FOR INTERACTION PROXIMITY */
+        .nav-layer { 
+            position: absolute; 
+            bottom: 25px; 
+            left: 0; 
+            width: 100%; 
+            padding: 0 80px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 1000; 
+            pointer-events: none; /* Biar tidak memblokir elemen di belakang area kosong boks footer */
+        }
+        .nav-btn, .slide-number { 
+            pointer-events: auto; /* Tombol & tracker tetap bisa diklik secara normal */
+        }
+        .nav-btn { width: 55px; height: 55px; background: white; border: 2px solid var(--primary); border-radius: 50%; cursor: pointer; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; transition: 0.3s; }
+        .nav-btn:hover { background: var(--primary); color: white; }
+        .slide-number { background: rgba(255,255,255,0.9); padding: 6px 22px; border-radius: 20px; font-weight: bold; border: 1px solid var(--gray); }
+
+        /* Interactive Graph Visuals */
+        .graph-container { width: 300px; height: 220px; border-left: 3px solid #2d3436; border-bottom: 3px solid #2d3436; position: relative; background: white; margin: 0 auto; }
+        
+        /* Cloze Blanks */
+        .snow-blank { width: 85px; border: 2px solid var(--primary); border-radius: 8px; text-align: center; font-weight: bold; margin: 0 5px; padding: 4px; font-size: 16px; outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="slide-container active" id="slide1">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <i class="fa-solid fa-scale-unbalanced" style="font-size: 90px; color: var(--primary); margin-bottom: 20px;"></i>
+        <h1>Inverse Comparison</h1>
+        <p style="font-size: 26px; color: #636E72;">Interactive Mathematics Deck for Cambridge Primary Syllabus</p>
+        <div class="card" style="margin-top: 35px; width: 450px; border-top: 6px solid var(--primary);">
+            <p style="font-weight: 600; font-size: 18px; margin-bottom: 15px;">Welcome to the Arena! Enter Your Name:</p>
+            <input type="text" id="studentNameInput" class="input-premium" style="width: 100%;" placeholder="Type name here...">
+            <br><br>
+            <button class="btn-premium" style="width: 100%; justify-content: center;" onclick="startPresentation()">Launch Deck <i class="fa-solid fa-rocket"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide2">
+    <h2>Recap: Direct Proportion (Perbandingan Senilai)</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; margin-top: 20px;">
+        <div class="card" style="border-top: 6px solid var(--secondary);">
+            <h3>How it works:</h3>
+            <p>When one value goes <b>UP</b> (&uparrow;), the other value goes <b>UP</b> (&uparrow;) at the exact same rate!</p>
+            <p><b>The Constant Ratio Formula:</b></p>
+            <div class="math-eq-container">
+                <div class="fraction"><div class="num">x₁</div><div class="den">y₁</div></div>
+                <span class="eq-sign">=</span>
+                <div class="fraction"><div class="num">x₂</div><div class="den">y₂</div></div>
+            </div>
+        </div>
+        <div class="card" style="background: var(--primary-light); display: flex; flex-direction: column; justify-content: center;">
+            <h3 style="color: var(--primary);"><i class="fa-solid fa-lightbulb"></i> Real Case Scenario:</h3>
+            <p style="font-size: 22px; line-height: 1.6;">If <b>5 boxes</b> of math tokens cost <b>$10</b>, what is the total price for <b>8 boxes</b>?</p>
+            <div style="background: white; padding: 20px; border-radius: 12px; font-size: 24px; font-weight: bold; color: var(--success); text-align: center; border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span>Step:</span>
+                <div class="fraction"><div class="num">10</div><div class="den">5</div></div>
+                <span>&times; 8 = $16</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide3">
+    <h2>Learning Objectives</h2>
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 900px; border-left: 12px solid var(--primary); padding: 50px; background: white;">
+            <h3 style="font-size: 28px; margin-bottom: 30px; color: var(--primary);">By the end of this journey, you will be able to:</h3>
+            <p style="font-size: 24px; line-height: 2;"><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 15px;"></i> Explain the exact meaning of an <b>Inverse Relationship</b>.</p>
+            <p style="font-size: 24px; line-height: 2;"><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 15px;"></i> Classify real-life situations into Direct or Inverse Categories.</p>
+            <p style="font-size: 24px; line-height: 2;"><i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 15px;"></i> Solve dynamic arithmetic word problems using x₁ &middot; y₁ = x₂ &middot; y₂.</p>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide4">
+    <h2>Let's Think Critically!</h2>
+    <div class="card" style="text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 50px; position: relative;">
+        <span id="think-badge" class="badge-info" style="position: absolute; top: 20px; left: 20px;">Question 1 of 5</span>
+        <p id="think-q" style="font-size: 26px; font-weight: 700; color: var(--dark); margin-bottom: 10px; padding: 0 40px;">The more people sharing the same pizza, will each person get more or less pizza?</p>
+        <div id="think-emoji" style="font-size: 90px; margin: 10px 0;">🍕</div>
+        <div id="think-btn-group" style="display: flex; gap: 25px; justify-content: center; margin-top: 10px;">
+            <button class="btn-premium" style="background: var(--success); min-width: 180px; justify-content: center;" onclick="checkThink('more')">MORE</button>
+            <button class="btn-premium" style="background: var(--danger); min-width: 180px; justify-content: center;" onclick="checkThink('less')">LESS</button>
+        </div>
+        <p id="think-fb" style="margin-top: 15px; font-size: 22px; font-weight: bold; min-height: 36px;"></p>
+        
+        <div style="margin-top: 20px; min-height: 60px;">
+            <button id="think-next" class="btn-premium" style="display:none; margin: 0 auto;" onclick="nextThink()">Next Question <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide5">
+    <h2>Inverse Proportion Definition (Berbalik Nilai)</h2>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; margin-top: 20px;">
+        <div class="card" style="border-top: 6px solid var(--primary); padding: 35px;">
+            <h3>What is Inverse Proportion?</h3>
+            <p style="font-size: 20px;">An <b>Inverse Proportion</b> occurs when an increase in one variable causing a proportional <b>decrease</b> in the other variable.</p>
+            <hr style="border: 1px solid var(--gray); margin: 20px 0;">
+            <h4 style="font-size: 22px; margin: 0 0 10px 0; color: var(--primary);">Key Characteristics:</h4>
+            <ul style="font-size: 18px; line-height: 1.8; padding-left: 20px;">
+                <li>If Value X goes UP (&uparrow;), Value Y goes DOWN (&downarrow;).</li>
+                <li>The multiplied **Product** (x &times; y) always hits the exact same constant (k).</li>
+            </ul>
+        </div>
+        <div class="card" style="text-align: center; display: flex; flex-direction: column; justify-content: center; background: #FFFDF0;">
+            <h3>The Golden Equation:</h3>
+            <div class="math-eq-container" style="font-size: 38px; justify-content: center;">
+                x₁ &middot; y₁ = x₂ &middot; y₂
+            </div>
+            <p style="margin-top: 25px; font-size: 18px; color: #555; padding: 0 20px;">To find the unknown variable, multiply the complete initial pair, then divide it by the single known variable!</p>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide6">
+    <h2>Direct vs Inverse Visual Matrix</h2>
+    
+    <div class="card" style="margin-bottom: 25px; padding: 20px; text-align: center; border-bottom: 4px solid var(--primary);">
+        <label style="font-weight: bold; font-size: 20px; margin-right: 15px; color: var(--dark);">
+            <i class="fa-solid fa-arrows-left-right" style="color: var(--primary);"></i> Drag to Simulate X Axis Movement:
+        </label>
+        <input type="range" min="20" max="280" value="150" style="width: 600px; height: 12px; accent-color: var(--primary); cursor: pointer; vertical-align: middle;" oninput="runGraphEngine(this.value)">
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: center;">
+        <div class="card">
+            <p style="font-size: 20px; font-weight: bold; color: var(--secondary);">Direct Proportion (Linear Line)</p>
+            <div class="math-eq-container" style="margin-bottom: 15px;">
+                <div class="fraction"><div class="num">x₁</div><div class="den">y₁</div></div>
+                <span class="eq-sign">=</span>
+                <div class="fraction"><div class="num">x₂</div><div class="den">y₂</div></div>
+            </div>
+            <div class="graph-container">
+                <svg width="100%" height="100%">
+                    <line x1="0" y1="220" x2="300" y2="20" stroke="var(--secondary)" stroke-width="5"/>
+                    <circle id="dot-d" cx="150" cy="120" r="8" fill="var(--danger)" />
+                </svg>
+            </div>
+        </div>
+        <div class="card">
+            <p style="font-size: 20px; font-weight: bold; color: var(--primary);">Inverse Proportion (Hyperbolic Curve)</p>
+            <div class="math-eq-container" style="margin-bottom: 15px;">
+                <div class="fraction"><div class="num">x₁</div><div class="den">x₂</div></div>
+                <span class="eq-sign">=</span>
+                <div class="fraction"><div class="num">y₂</div><div class="den">y₁</div></div>
+            </div>
+            <div class="graph-container">
+                <svg width="100%" height="100%">
+                    <path d="M 15 25 Q 40 200 300 210" stroke="var(--primary)" fill="none" stroke-width="5"/>
+                    <circle id="dot-i" cx="150" cy="115" r="8" fill="var(--danger)" />
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide7">
+    <h2>Case Sorting Game Arena</h2>
+    <div class="card" style="text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; background: #FAFAFD;">
+        <span id="case-badge" class="badge-info" style="position: absolute; top: 20px; left: 20px;">Scenario 1 of 20</span>
+        <p id="case-text" style="font-size: 32px; font-weight: bold; color: var(--dark); padding: 0 40px; min-height: 100px;">1. Number of workers vs Days needed to build a school wall.</p>
+        <div style="display: flex; gap: 30px; justify-content: center; margin-top: 20px;">
+            <button class="btn-premium" style="background: var(--secondary); min-width: 250px; font-size: 22px; justify-content: center;" onclick="evaluateCase('direct')">DIRECT PROPORTION</button>
+            <button class="btn-premium" style="background: var(--primary); min-width: 250px; font-size: 22px; justify-content: center;" onclick="evaluateCase('inverse')">INVERSE PROPORTION</button>
+        </div>
+        <p id="case-fb" style="margin-top: 30px; font-size: 26px; font-weight: bold; min-height: 38px;"></p>
+        <button id="case-next" class="btn-premium" style="display:none; align-self: center;" onclick="nextCase()">Next Scenario <i class="fa-solid fa-circle-chevron-right"></i></button>
+    </div>
+</div>
+
+<div class="slide-container" id="slide8">
+    <h2>Worked Example Problem</h2>
+    <div class="card" style="border-left: 12px solid var(--primary); padding: 45px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+        <p style="font-size: 28px; font-weight: 500; line-height: 1.5; margin: 0 0 25px 0;">
+            "If 6 identical water pumps can completely drain a school swimming pool in exactly 12 hours, how long will it take for 8 of the same pumps to drain it?"
+        </p>
+        <hr style="border: 1px solid var(--gray); width: 100%; margin-bottom: 25px;">
+        <h3 style="color: var(--primary); font-size: 26px;"><i class="fa-solid fa-gears"></i> Comprehensive Step-by-Step Solution:</h3>
+        <p style="font-size: 20px; margin: 5px 0;">1. Analyze connection: More active water pumps means **Less** time spent draining (&uparrow; &downarrow; Inverse).</p>
+        <p style="font-size: 20px; margin: 5px 0;">2. Apply the Product Formula: x₁ &middot; y₁ = x₂ &middot; y₂</p>
+        <div class="math-eq-container" style="margin: 15px 0; width: fit-content;">
+            <span>6 &times; 12 = 8 &times; y₂</span>
+        </div>
+        <div style="font-size: 24px; font-weight: bold; color: var(--success); margin: 10px 0; display: flex; align-items: center; gap: 10px;">
+            <span>72 = 8y₂ &nbsp; &rarr; &nbsp; y₂ = </span>
+            <div class="fraction"><div class="num">72</div><div class="den">8</div></div>
+            <span> = 9 Hours!</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide9">
+    <h2>Practice Arena (20 Systematic Math Challenges)</h2>
+    <div class="card" style="text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative;">
+        <span id="prac-badge" class="badge-info" style="position: absolute; top: 20px; left: 20px;">Task 1 of 20</span>
+        <p id="prac-question-text" style="font-size: 24px; font-weight: bold; color: var(--dark); min-height: 90px; padding: 0 50px;"></p>
+        
+        <div style="margin: 15px 0;">
+            <input type="number" id="prac-input-field" class="input-premium" style="width: 250px; height: 55px; font-size: 24px;" placeholder="Enter numeric value">
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px;">
+            <button class="btn-premium" style="background: var(--success);" onclick="verifyPracticeAnswer()">Verify Answer</button>
+            <button class="btn-premium" style="background: #b2bec3; color: var(--dark);" onclick="togglePracticeHint()">Pembahasan</button>
+            <button class="btn-premium" style="background: var(--secondary);" onclick="nextPracticeQuestion()">Next Challenge</button>
+        </div>
+
+        <div id="prac-hint-panel" style="display:none; margin-top: 20px; padding: 20px; background: #F1F2F6; border-radius: 12px; border-left: 6px solid var(--primary); text-align: left; font-size: 18px;"></div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide10">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>Snow White & Seven Dwarfs Matematika Dongeng</h2>
+        <button class="btn-premium" style="background: var(--dark); font-size: 15px; padding: 8px 20px;" onclick="switchSnowWhiteLanguage()">Switch Language: EN / ID</button>
+    </div>
+    <div class="card" id="snow-story-wrapper" style="overflow-y: auto; flex: 1; font-size: 17px; line-height: 1.9; background: #FFFDF5; border-radius: 15px; padding: 30px; border: 2px dashed #ffeaa7;">
+        </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="btn-premium" style="background: var(--success); width: 400px; justify-content: center;" onclick="evaluateSnowWhiteBlanks()">Validate All 15 Answers <i class="fa-solid fa-stamp"></i></button>
+    </div>
+</div>
+
+<div class="slide-container" id="slide11">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>Dynamic Card Matrix Challenge (1-20)</h2>
+        <div id="matrix-timer-clock" style="font-size: 28px; font-weight: 700; color: var(--accent); background: #2D3436; padding: 6px 25px; border-radius: 30px; font-family: 'Azeret Mono', monospace; border: 2px solid var(--gray);">03:00</div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 35px; flex: 1; height: 450px;">
+        <div class="matrix-grid" id="matrix-slots-container"></div>
+        
+        <div class="focus-panel" id="matrix-interactive-panel" style="visibility: hidden;">
+            <h3 id="focus-card-header" style="color: var(--primary); margin-bottom: 10px;">Card Challenge #1</h3>
+            <p id="focus-question-body" style="font-size: 16px; min-height: 110px; line-height: 1.6; color: #333; margin: 0 0 10px 0;"></p>
+            
+            <div id="matrix-explanation-box" style="display:none; background: #E3F2FD; padding: 12px; border-radius: 10px; border-left: 5px solid var(--secondary); font-size: 14px; margin-bottom: 10px; font-weight: 500;"></div>
+            
+            <input type="number" id="focus-input-element" class="input-premium" style="margin-bottom: 15px; width: 100%; height: 50px;" placeholder="Type solution numerical results..." disabled>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <button id="matrix-ignite-btn" class="btn-premium" style="font-size: 15px; justify-content: center;" onclick="triggerMatrixTimer()"><i class="fa-solid fa-play"></i> Start Clock</button>
+                <button id="matrix-plus-btn" class="btn-premium" style="background: var(--secondary); font-size: 15px; justify-content: center;" onclick="extendMatrixTimer()"><i class="fa-solid fa-plus"></i> +15s</button>
+            </div>
+            
+            <button id="matrix-submit-btn" class="btn-premium" style="background: var(--success); width: 100%; justify-content: center; margin-bottom: 8px;" onclick="verifyMatrixCardAnswer()">Submit Solution</button>
+            <button id="matrix-hint-btn" class="btn-premium" style="background: #B2BEC3; color: var(--dark); width: 100%; justify-content: center; font-size: 15px; padding: 8px;" onclick="revealMatrixExplanation()">Pembahasan</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide12">
+    <h2>Performance Speed Analytics</h2>
+    <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; margin-top: 10px;">
+        <div class="card" style="height: 420px; overflow-y: auto; padding: 0; border: 2px solid var(--gray);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background: var(--primary); color: white; position: sticky; top:0;">
+                    <tr>
+                        <th style="padding: 15px; font-size: 18px;">Solved Card ID</th>
+                        <th style="padding: 15px; font-size: 18px;">Solve Velocity Duration</th>
+                    </tr>
+                </thead>
+                <tbody id="analytics-table-rows">
+                    <tr><td colspan="2" style="padding: 30px; text-align: center; color: #888;">No solved cards tracked yet. Go play Slide 11!</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card" style="text-align: center; justify-content: center; display: flex; flex-direction: column; background: var(--primary-light); border: 2px dashed var(--primary);">
+            <i class="fa-solid fa-stopwatch-20" style="font-size: 75px; color: var(--primary); margin-bottom: 15px;"></i>
+            <h3 style="font-size: 26px; margin: 0;">Your Average Solve Speed:</h3>
+            <h1 id="analytics-avg-display" style="font-size: 85px; margin: 10px 0; color: var(--primary);">0.0<span style="font-size: 25px; color:#666;">s</span></h1>
+            <p style="font-size: 16px; color: #555; margin: 0;">Keep practicing to drop your average processing time!</p>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide13">
+    <h2>Summary & Conceptual Reflection</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; margin-top: 20px;">
+        <div class="card" style="border-top: 8px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h3 style="color: var(--primary);">Quick Summary:</h3>
+                <p style="font-size: 18px; line-height: 1.7;"><b>Direct Proportion:</b> Variables adjust in uniform symmetry (x/y = k). Graph is perfectly straight.</p>
+                <p style="font-size: 18px; line-height: 1.7;"><b>Inverse Proportion:</b> Variables counteract symmetrically (x &middot; y = k). Graph bends in curves.</p>
+            </div>
+            <div style="font-size: 50px; text-align: center;">💡 &nbsp; 🧠 &nbsp; 📐</div>
+        </div>
+        <div class="card" style="border-top: 8px solid var(--secondary);">
+            <h3 style="color: var(--secondary);">Student Self Reflection:</h3>
+            <p style="font-size: 16px;">Write down one example of an inverse proportion from your actual daily surroundings:</p>
+            <textarea class="input-premium" style="width:100%; height: 180px; text-align: left; font-family: inherit; font-size: 16px;" placeholder="Type your personal insights here..."></textarea>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14" style="text-align: center; justify-content: center; align-items: center;">
+    <div style="font-size: 110px; margin-bottom: 10px;">🏆</div>
+    <h1 style="font-size: 85px; color: var(--accent);">GRAND FINALE!</h1>
+    <p id="thanks-student-title" style="font-size: 34px; font-weight: bold; color: var(--primary); margin: 10px 0;"></p>
+    <p style="font-size: 22px; color: #4A5568; max-width: 700px;">You've successfully conquered all core mathematical modules, stories, and metrics of Inverse Proportion!</p>
+    <button class="btn-premium" style="margin-top: 30px;" onclick="navigateToDeckSlide(1)"><i class="fa-solid fa-rotate-left"></i> Restart Whole Deck</button>
+</div>
+
+<div class="nav-layer">
+    <button class="nav-btn" onclick="triggerPrevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="slide-number" id="deck-tracker-label">Slide 1 / 14</div>
+    <button class="nav-btn" onclick="triggerNextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+    /* ENGINE VARIABLES */
+    let currentDeckIndex = 1;
+    let globalStudentName = "Learner";
+    let trackerClockCountdown = 180;
+    let intervalTimerReference = null;
+    let cardCalculationTimestamp = null;
+    let registeredAnalyticsLogs = [];
+    let focusedMatrixElementIndex = null;
+
+    function navigateToDeckSlide(targetIndex) {
+        if(targetIndex < 1 || targetIndex > 14) return;
+        document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+        document.getElementById(`slide${targetIndex}`).classList.add('active');
+        document.getElementById('deck-tracker-label').innerText = `Slide ${targetIndex} / 14`;
+        currentDeckIndex = targetIndex;
+        if(targetIndex === 14) {
+            document.getElementById('thanks-student-title').innerText = `Magnificent Effort, ${globalStudentName}!`;
+        }
+    }
+    function triggerNextSlide() { navigateToDeckSlide(currentDeckIndex + 1); }
+    function triggerPrevSlide() { navigateToDeckSlide(currentDeckIndex - 1); }
+
+    function startPresentation() {
+        let textVal = document.getElementById('studentNameInput').value.trim();
+        if(textVal) globalStudentName = textVal;
+        triggerNextSlide();
+        executeVoiceOutput(`Hello ${globalStudentName}, let's master inverse proportion together!`);
+    }
+
+    function executeVoiceOutput(phrase) {
+        window.speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.lang = (phrase.includes('kurcaci') || phrase.includes('kue') || phrase.includes('pakan') || phrase.includes('peta')) ? 'id-ID' : 'en-US';
+        window.speechSynthesis.speak(utterance);
+    }
+
+    /* SLIDE 4: LOGIC */
+    const datasetThink = [
+        {q: "The more people sharing the same pizza, will each person get more or less pizza?", a: "less", e: "🍕"},
+        {q: "The faster you drive a racing car to school, will the journey time taken be more or less?", a: "less", e: "🚗"},
+        {q: "The more workers building a backyard treehouse, will it require more or less days?", a: "less", e: "🏗️"},
+        {q: "The more baby kittens sharing one bowl of milk, will the time to empty it be more or less?", a: "less", e: "🐱"},
+        {q: "The wider a rectangle gets while area stays perfectly fixed, will its length be more or less?", a: "less", e: "📐"}
+    ];
+    let indexThinkCounter = 0;
+    function checkThink(userChoice) {
+        let feedbackElement = document.getElementById('think-fb');
+        if(userChoice === datasetThink[indexThinkCounter].a) {
+            feedbackElement.innerText = "Fantastic! Opposite reactions mean Inverse Proportion."; 
+            feedbackElement.style.color = "var(--success)";
+            executeVoiceOutput("Good job!");
+            document.getElementById('think-next').style.display = "inline-flex";
+        } else {
+            feedbackElement.innerText = "Let's rethink! More consumers always mean smaller shared pieces."; 
+            feedbackElement.style.color = "var(--danger)";
+            executeVoiceOutput("Try again!");
+        }
+    }
+    function nextThink() {
+        indexThinkCounter++;
+        if(indexThinkCounter < datasetThink.length) {
+            document.getElementById('think-badge').innerText = `Question ${indexThinkCounter + 1} of 5`;
+            document.getElementById('think-q').innerText = datasetThink[indexThinkCounter].q;
+            document.getElementById('think-emoji').innerText = datasetThink[indexThinkCounter].e;
+            document.getElementById('think-fb').innerText = "";
+            document.getElementById('think-next').style.display = "none";
+        } else {
+            document.getElementById('think-badge').innerText = "Done!";
+            document.getElementById('think-q').innerText = "Warm-up Phase Complete! You possess excellent logic.";
+            document.getElementById('think-emoji').innerText = "🎉";
+            document.getElementById('think-fb').innerText = "Ready to proceed to definitions!";
+            document.getElementById('think-fb').style.color = "var(--primary)";
+            document.getElementById('think-next').style.display = "none";
+            document.getElementById('think-btn-group').style.display = "none";
+        }
+    }
+
+    /* SLIDE 6: GRAPH INTERACTIVE ENGINE */
+    function runGraphEngine(sliderX) {
+        let xVal = parseInt(sliderX);
+        
+        if(xVal < 20) xVal = 20;
+        if(xVal > 280) xVal = 280;
+        
+        // 1. Grafik Senilai (Direct Line)
+        let dotD = document.getElementById('dot-d');
+        if(dotD) {
+            dotD.setAttribute('cx', xVal);
+            let cyDirect = 220 - (xVal * (200 / 300));
+            dotD.setAttribute('cy', cyDirect);
+        }
+        
+        // 2. Grafik Berbalik Nilai (Inverse Curve)
+        let dotI = document.getElementById('dot-i');
+        if(dotI) {
+            dotI.setAttribute('cx', xVal);
+            
+            let t = (xVal - 15) / (300 - 15);
+            if(t < 0) t = 0;
+            if(t > 1) t = 1;
+            
+            // Formula Bezier Y: P0=(15, 25), P1=(40, 200), P2=(300, 210)
+            let cyInverse = Math.pow(1 - t, 2) * 25 + 2 * (1 - t) * t * 200 + Math.pow(t, 2) * 210;
+            
+            dotI.setAttribute('cy', cyInverse);
+        }
+    }
+
+    /* SLIDE 7: CASE SORTING GAME */
+    const datasetCaseSorting = [
+        {t: "1. Number of active construction workers vs Days needed to build a school wall.", a: "inverse"},
+        {t: "2. Total cost of groceries vs Weight of fresh oranges purchased.", a: "direct"},
+        {t: "3. Constant speed of a flight jet vs Total hours taken to arrive at London.", a: "inverse"},
+        {t: "4. Gallons of fuel consumption vs Total kilometers covered by a truck.", a: "direct"},
+        {t: "5. Many open water taps running vs Total minutes needed to fill up an Olympic pool.", a: "inverse"},
+        {t: "6. Total number of children sharing candy vs Weight of candy slices each child receives.", a: "inverse"},
+        {t: "7. Weight of organic apples vs Total payment required at cashier counter.", a: "direct"},
+        {t: "8. Continuous typing speed vs Total minutes spent to finish writing a book report.", a: "inverse"},
+        {t: "9. Working hours of factory machines vs Quantity of student toy units manufactured.", a: "direct"},
+        {t: "10. Farm cattle headcount vs Days the feed inventory stockpile can last.", a: "inverse"},
+        {t: "11. Banyaknya mesin cetak printer vs Total waktu pengerjaan brosur sekolah.", a: "inverse"},
+        {t: "12. Jumlah bensin yang dibeli vs Total kilometer jarak tempuh kendaraan.", a: "direct"},
+        {t: "13. Jumlah penjahit profesional vs Hari pengerjaan seragam batch massal.", a: "inverse"},
+        {t: "14. Total lembar halaman kertas vs Berat timbangan paket buku sekolah.", a: "direct"},
+        {t: "15. Kecepatan murid menyapu vs Jumlah menit sapu halaman beres.", a: "inverse"},
+        {t: "16. Jumlah tiket bioskop terjual vs Total keuntungan finansial studio.", a: "direct"},
+        {t: "17. Nilai skala peta arsitek vs Panjang garis ukur gambar denah gedung.", a: "direct"},
+        {t: "18. Kapasitas debit air pompa vs Durasi kuras tandon air bawah tanah.", a: "inverse"},
+        {t: "19. Jumlah donat cokelat dibeli siswa vs Total nominal kembalian uang.", a: "inverse"},
+        {t: "20. Kecepatan lari konstan atlet vs Total detik pencapaian garis finish.", a: "inverse"}
+    ];
+    let indexCaseCounter = 0;
+    function evaluateCase(userChoice) {
+        let fbElement = document.getElementById('case-fb');
+        if(userChoice === datasetCaseSorting[indexCaseCounter % datasetCaseSorting.length].a) {
+            fbElement.innerText = "Excellent Work! That classification is fully accurate."; 
+            fbElement.style.color = "var(--success)";
+            executeVoiceOutput("Good job!");
+            document.getElementById('case-next').style.display = "inline-flex";
+        } else {
+            fbElement.innerText = "Incorrect! Think deeper about item multipliers."; 
+            fbElement.style.color = "var(--danger)";
+            executeVoiceOutput("Try again!");
+        }
+    }
+    function nextCase() {
+        indexCaseCounter++;
+        let targetItem = datasetCaseSorting[indexCaseCounter % datasetCaseSorting.length];
+        document.getElementById('case-badge').innerText = `Scenario ${indexCaseCounter + 1} of 20`;
+        document.getElementById('case-text').innerText = targetItem.t;
+        document.getElementById('case-fb').innerText = "";
+        document.getElementById('case-next').style.display = "none";
+    }
+
+    /* SLIDE 9: PRACTICE ARENA */
+    const datasetPracticeArena = [
+        {q: "1. 10 people empty a food storage tank in 6 days. How long will it take for 12 people?", a: 5, h: "Inverse formula: 10 people x 6 days = 60 product value. Then 60 / 12 people = 5 days."},
+        {q: "2. Driving a scooter at 60 km/h takes 4 hours. How many hours will it take if speed accelerates to 80 km/h?", a: 3, h: "Inverse product: 60 x 4 = 240 total km. New time: 240 / 80 km/h = 3 hours."},
+        {q: "3. 8 uniform water pipes can fill up a backyard cistern in 15 minutes. How long will it take if 10 pipes run?", a: 12, h: "Constant volume: 8 x 15 = 120. Splitting across 10 active pipes: 120 / 10 = 12 minutes."},
+        {q: "4. 15 builders can assemble a wooden greenhouse in 8 days. If only 10 builders show up, find total days required.", a: 12, h: "Work product: 15 x 8 = 120 man-days. Division: 120 / 10 builders = 12 days."},
+        {q: "5. Animal fodder supply lasts 9 days for 20 cows. If 5 cows are sold off immediately, how long will it last?", a: 12, h: "Cows left: 20 - 5 = 15 cows. Math: (9 days x 20 cows) / 15 cows = 180 / 15 = 12 days."},
+        {q: "6. A routine delivery travel takes 5 hours at a velocity of 72 km/h. How many hours does it take at 90 km/h?", a: 4, h: "Total distance product: 72 x 5 = 360 km. Dynamic division: 360 / 90 km/h = 4 hours."},
+        {q: "7. 12 tailors create standard school jackets in 6 days. How many tailors must work to wrap up everything in 4 days?", a: 18, h: "Total efforts: 12 x 6 = 72 tailors-days. Target adjustment: 72 / 4 target days = 18 tailors."},
+        {q: "8. 3 electric drainage pumps can empty an artificial lake in 40 minutes. If 4 pumps operate simultaneously?", a: 30, h: "Multiplication: 3 x 40 = 120 fluid units. Adjusted split: 120 / 4 active pumps = 30 minutes."},
+        {q: "9. A transcription project takes 6 hours at 50 words per minute. How long if typing speed updates to 60 wpm?", a: 5, h: "Word inventory: 50 x 6 = 300 volume. Timetable recalculation: 300 / 60 wpm speed = 5 hours."},
+        {q: "10. 16 campsite soldiers hold food rations for 10 days. If 20 soldiers share the exact same stockpile, find the days.", a: 8, h: "Ration inventory product: 16 x 10 = 160 units. Division: 160 / 20 soldiers = 8 days."},
+        {q: "11. (ID) Suatu paket kue cukup dibagikan ke 30 anak, masing-masing menerima 4 keping. Jika dibagikan ke 40 anak?", a: 3, h: "Total kue: 30 anak x 4 keping = 120 keping. Dibagi rata ke 40 anak: 120 / 40 = 3 keping."},
+        {q: "12. (ID) Arsitek merancang maket denah sekolah dengan skala 1:500. Jarak denah adalah 4 cm, berapakah meter jarak asli lapangan?", a: 20, h: "Skala: 4 cm x 500 = 2000 cm. Konversi ke unit meter: 2000 cm / 100 = 20 meter."},
+        {q: "13. (ID) 6 mesin cetak beroperasi penuh merampungkan buku kuis dalam 15 jam. Berapa jam jika dipakai 9 mesin cetak?", a: 10, h: "Beban kerja: 6 mesin x 15 jam = 90 unit. Durasi baru: 90 / 9 mesin aktif = 10 jam."},
+        {q: "14. (ID) Jarak kota A ke kota B ditempuh 3 jam berkendara berkecepatan 80 km/jam. Jika kecepatan diubah ke 120 km/jam?", a: 2, h: "Jarak konstan: 3 x 80 = 240 km. Penghitungan waktu tempuh baru: 240 / 120 km/jam = 2 jam."},
+        {q: "15. (ID) Pakan ternak ayam habis dalam 14 hari untuk 50 ekor. Jika peternak membeli 20 ekor ayam lagi, habis dalam berapa hari?", a: 10, h: "Total ayam baru: 50 + 20 = 70 ekor. Perkalian terbalik: (14 hari x 50 ekor) / 70 ekor = 700 / 70 = 10 hari."},
+        {q: "16. (ID) 8 pekerja merenovasi ruang perpustakaan sekolah dalam 15 hari. Jika ingin selesai dalam 10 hari, berapa jumlah pekerja total?", a: 12, h: "Man-days: 8 x 15 = 120. Pekerja yang dibutuhkan untuk durasi 10 hari: 120 / 10 hari = 12 orang pekerja."},
+        {q: "17. (ID) 4 keran air menyala bersamaan menguras bak mandi dalam 25 menit. Berapa menit habis jika hanya 2 keran air menyala?", a: 50, h: "Volume bak: 4 keran x 25 menit = 100 nilai konstan. Pembagian: 100 / 2 keran aktif = 50 menit."},
+        {q: "18. (ID) Beasiswa dana dibagikan untuk 12 siswa berprestasi masing-masing Rp1.000.000. Jika penerima diperbanyak jadi 24 siswa?", a: 500000, h: "Total anggaran tetap: 12 x 1.000.000 = Rp12.000.000. Alokasi per orang untuk 24 kuota: 12.000.000 / 24 = Rp500.000."},
+        {q: "19. (ID) Proyek taman selesai dalam 20 hari oleh 9 pekerja. Jika pekerja ditambah 6 orang lagi, berapa hari proyek selesai?", a: 12, h: "Pekerja baru: 9 + 6 = 15 orang. Rumus perkalian: 20 hari x 9 pekerja = 180. Hasil hari baru: 180 / 15 pekerja = 12 hari."},
+        {q: "20. (ID) Jarak dua gedung sekolah pada denah berskala 1:300 tercatat sepanjang 6 cm. Berapa meter jarak riil sebenarnya?", a: 18, h: "Skala langsung: 6 cm x 300 = 1800 cm. Ubah centimeter ke unit meter riil: 1800 / 100 = 18 meter."}
+    ];
+    let indexPracticeCounter = 0;
+    function nextPracticeQuestion() {
+        indexPracticeCounter = (indexPracticeCounter + 1) % datasetPracticeArena.length;
+        document.getElementById('prac-badge').innerText = `Task ${indexPracticeCounter + 1} of 20`;
+        document.getElementById('prac-question-text').innerText = datasetPracticeArena[indexPracticeCounter].q;
+        document.getElementById('prac-input-field').value = "";
+        document.getElementById('prac-hint-panel').style.display = "none";
+        document.getElementById('prac-input-field').style.backgroundColor = "white";
+    }
+    function verifyPracticeAnswer() {
+        let inputVal = parseInt(document.getElementById('prac-input-field').value);
+        let fieldEl = document.getElementById('prac-input-field');
+        if(inputVal === datasetPracticeArena[indexPracticeCounter].a) {
+            fieldEl.style.backgroundColor = "#D1FAE5";
+            executeVoiceOutput(`Good job ${globalStudentName}`);
+        } else {
+            fieldEl.style.backgroundColor = "#FEE2E2";
+            executeVoiceOutput("Try again!");
+        }
+    }
+    function togglePracticeHint() {
+        let panel = document.getElementById('prac-hint-panel');
+        panel.innerText = datasetPracticeArena[indexPracticeCounter].h;
+        panel.style.display = (panel.style.display === "none") ? "block" : "none";
+    }
+
+    /* SLIDE 10: SNOW WHITE STORIES */
+    let selectedSnowWhiteLang = 'en';
+    const dynamicSnowWhiteNarrative = {
+        en: `<h3>Snow White & The Mathematical Kingdom</h3>
+             <p><b>Paragraph 1:</b> Once upon a time, Snow White baked magical apple tarts in the cottage kitchen. She noticed that when using 2 ovens, baking took exactly 60 minutes. If she runs 4 ovens simultaneously, it will take <input type='number' class='snow-blank' data-ans='30'> minutes (Q1). Then, 3 dwarfs were cutting wood pieces for the fireplace which took 10 minutes. If 6 dwarfs cut together, it takes <input type='number' class='snow-blank' data-ans='5'> minutes (Q2). At the village market, 5 meters of decorative ribbon cost 15 gold coins, which means buying 10 meters requires a total of <input type='number' class='snow-blank' data-ans='30'> coins (Q3 - Direct Proportion).</p>
+             <p><b>Paragraph 2:</b> The next morning, the dwarfs started digging a fresh water well outside the cottage. 7 dwarfs can complete the digging task in 12 days. If Snow White joins them to help (making it 8 people in total), it will take exactly <input type='number' class='snow-blank' data-ans='10.5' step='0.1'> days (Q4). To protect the garden, 1 packet of premium organic grass seeds covers 5m² of terrain. To cover a vast area of 20m², she must purchase <input type='number' class='snow-blank' data-ans='4'> packets (Q5). Preparing lunch, 6 small crystal soup bowls are filled with 400ml of soup each. If they distribute the same soup into 8 larger bowls, each gets <input type='number' class='snow-blank' data-ans='300'> ml (Q6).</p>
+             <p><b>Paragraph 3:</b> In the afternoon, a delicious strawberry birthday cake arrived at the cottage. If only 4 dwarfs share the cake, each gets a hefty slice of 150 grams. If all 8 friends share it equally, each person receives <input type='number' class='snow-blank' data-ans='75'> grams (Q7). For drinks, 3 dwarfs normally drink a special jug of berry juice, filling up 4 full glasses each. If 6 people share the same jug, each gets <input type='number' class='snow-blank' data-ans='2'> glasses (Q8). Time for house chores: 2 dwarfs take 30 minutes to wash all messy dinner plates. If 5 dwarfs wash together, it takes <input type='number' class='snow-blank' data-ans='12'> minutes (Q9).</p>
+             <p><b>Paragraph 4:</b> Evening approached, and Snow White decided to read some ancient fairytales. Reading at a speed of 2 pages/minute takes her 20 minutes to finish. Reading at 4 pages/minute takes <input type='number' class='snow-blank' data-ans='10'> minutes (Q10). To illuminate the dark cottage rooms, 3 oil drops inside a lantern last for 15 hours. If Doc puts 6 drops, the light lasts for <input type='number' class='snow-blank' data-ans='30'> hours (Q11). The dwarfs knew that 1 log cabin protects 8 friends safely. By that exact linear logic, 2 similar cabins will protect <input type='number' class='snow-blank' data-ans='16'> friends (Q12).</p>
+             <p><b>Paragraph 5:</b> Before sleeping, Grumpy went to buy fresh donuts at the bakery. 5 coins buy 2 sweet donuts, so 15 coins will fetch him <input type='number' class='snow-blank' data-ans='6'> donuts (Q13). Grumpy then walked a distance of 4km back in 1 hour; walking 8km at the same pace takes <input type='number' class='snow-blank' data-ans='2'> hours (Q14). Sleepy slept for 8 hours during 1 full day cycle. If he maintains this habit over 2 days, he spends <input type='number' class='snow-blank' data-ans='16'> hours resting (Q15).</p>`,
+        
+        id: `<h3>Snow White & Kerajaan Matematika</h3>
+             <p><b>Paragraf 1:</b> Dahulu kala, Snow White memanggang kue apel lezat di dapur pondok kurcaci. Ia memperhatikan bahwa ketika menggunakan 2 oven, panggangan selesai dalam 60 menit. Jika ia menyalakan 4 oven bersamaan, maka hanya butuh <input type='number' class='snow-blank' data-ans='30'> menit (S1). Kemudian, 3 kurcaci memotong kayu bakar untuk perapian selama 10 menit. Jika 6 kurcaci memotong bersama, selesai dalam <input type='number' class='snow-blank' data-ans='5'> menit (S2). Di pasar desa, 5 meter pita dekorasi berharga 15 koin emas, yang berarti membeli 10 meter pita membutuhkan <input type='number' class='snow-blank' data-ans='30'> koin (S3 - Senilai).</p>
+             <p><b>Paragraf 2:</b> Keesokan paginya, para kurcaci mulai menggali sumur air bersih di luar pondok. 7 kurcaci mampu menyelesaikan galian dalam 12 hari. Jika Snow White ikut membantu menggali (total menjadi 8 orang), galian sumur selesai dalam <input type='number' class='snow-blank' data-ans='10.5' step='0.1'> hari (S4). Untuk merawat halaman, 1 kantong benih rumput subur cukup untuk lahan seluas 5m². Untuk menutup area seluas 20m², ia perlu membeli <input type='number' class='snow-blank' data-ans='4'> kantong benih (S5). Saat menyiapkan sup, 6 mangkuk kristal diisi masing-masing 400ml sup. Jika sup dituangkan rata ke dalam 8 mangkuk, masing-masing berisi <input type='number' class='snow-blank' data-ans='300'> ml (S6).</p>
+             <p><b>Paragraf 3:</b> Di siang hari, sebuah kue ulang tahun stroberi tiba di pondok. Jika hanya 4 kurcaci yang berbagi kue, masing-masing mendapat potongan besar 150 gram. Jika seluruh 8 orang di pondok berbagi rata, tiap orang mendapat <input type='number' class='snow-blank' data-ans='75'> gram (S7). Untuk minuman, 3 kurcaci biasanya menghabiskan satu teko jus beri dengan masing-masing mendapat 4 gelas penuh. Jika 6 orang berbagi teko yang sama, masing-masing mendapat <input type='number' class='snow-blank' data-ans='2'> gelas (S8). Waktunya membersihkan rumah: 2 kurcaci butuh 30 menit untuk mencuci piring kotor. Jika 5 kurcaci mencuci bersama, selesai dalam <input type='number' class='snow-blank' data-ans='12'> menit (S9).</p>
+             <p><b>Paragraf 4:</b> Malam menjelang, dan Snow White membaca buku dongeng kuno. Membaca dengan kecepatan 2 halaman/menit membutuhkan waktu 20 menit. Jika kecepatan membacanya naik menjadi 4 halaman/menit, ia butuh <input type='number' class='snow-blank' data-ans='10'> menit (S10). Untuk menerangi kamar pondok yang gelap, 3 tetes minyak lentera dapat bertahan selama 15 jam. Jika Doc memasukkan 6 tetes minyak, lentera menyala selama <input type='number' class='snow-blank' data-ans='30'> jam (S11). Para kurcaci tahu bahwa 1 pondok kayu melindungi 8 teman dengan aman. Berdasarkan logika senilai, 2 pondok sejenis dapat melindungi <input type='number' class='snow-blank' data-ans='16'> teman (S12).</p>
+             <p><b>Paragraf 5:</b> Sebelum tidur, Grumpy pergi membeli donat di toko kue desa. 5 koin emas dapat membeli 2 donat manis, sehingga 15 koin emas akan mendapatkan <input type='number' class='snow-blank' data-ans='6'> donat (S13). Grumpy then walked a distance of 4km back in 1 hour; walking 8km at the same pace takes <input type='number' class='snow-blank' data-ans='2'> hours (S14). Sleepy tidur selama 8 jam dalam siklus 1 hari penuh. Jika ia mempertahankan kebiasaan ini selama 2 hari, ia menghabiskan waktu <input type='number' class='snow-blank' data-ans='16'> jam untuk beristirahat (S15).</p>`
+    };
+    function switchSnowWhiteLanguage() {
+        selectedSnowWhiteLang = (selectedSnowWhiteLang === 'en' ? 'id' : 'en');
+        document.getElementById('snow-story-wrapper').innerHTML = dynamicSnowWhiteNarrative[selectedSnowWhiteLang];
+    }
+    function evaluateSnowWhiteBlanks() {
+        let structuralFlag = true;
+        document.querySelectorAll('.snow-blank').forEach(el => {
+            if(parseFloat(el.value) == el.dataset.ans) {
+                el.style.backgroundColor = "#D1FAE5";
+                el.style.borderColor = "var(--success)";
+            } else {
+                el.style.backgroundColor = "#FEE2E2";
+                el.style.borderColor = "var(--danger)";
+                structuralFlag = false;
+            }
+        });
+        if(structuralFlag) {
+            executeVoiceOutput(`Nice job ${globalStudentName}`);
+        } else {
+            executeVoiceOutput("Please check your numbers again.");
+        }
+    }
+
+    /* SLIDE 11: CHALLENGE GRID SYSTEM */
+    const datasetMatrixPool = [
+        {id: 1, q: "3 cats finish a box of fish food in 10 days. How many days will it take for 5 cats?", a: 6, h: "3 x 10 = 30 total supply. 30 / 5 cats = 6 days."},
+        {id: 2, q: "A kingdom map uses a scale of 1:200. If a pathway is drawn as 5cm, what is the real length in cm?", a: 1000, h: "Direct scale multiplier: 5 cm x 200 = 1000 cm real size."},
+        {id: 3, q: "6 builders can complete an indoor pool in 4 days. How many days will it take for 8 builders?", a: 3, h: "6 x 4 = 24 required man-days. 24 / 8 builders = 3 days."},
+        {id: 4, q: "A village map chart has a scale of 1:500. A sketch line measures 3cm, find real length in cm.", a: 1500, h: "Scale multiplication: 3 cm x 500 = 1500 cm real size."},
+        {id: 5, q: "2 open water taps fill a vat in 30 minutes. How many minutes will it take if 3 taps run?", a: 20, h: "Product: 2 x 30 = 60 capacity. Split over 3 taps: 60 / 3 = 20 minutes."},
+        {id: 6, q: "An architectural model plan is scaled 1:100. A window is drawn as 12cm, find real length in cm.", a: 1200, h: "12 cm x 100 multiplier = 1200 cm real dimension."},
+        {id: 7, q: "12 hungry horses empty a hay box in 5 days. How many days will it last for 15 horses?", a: 4, h: "Product: 12 x 5 = 60 food units. 60 / 15 horses = 4 days."},
+        {id: 8, q: "A botanical map scale is 1:400. A garden plot boundary is 6cm, find the real length in cm.", a: 2400, h: "6 cm x 400 scale factor = 2400 cm real boundary distance."},
+        {id: 9, q: "9 road workers paving a street take 8 days. How many days will it take for 12 workers?", a: 6, h: "9 workers x 8 days = 72 volume. 72 / 12 workers = 6 days."},
+        {id: 10, q: "A miniature model castle scale is 1:250. The main drawbridge is 4cm, find real length in cm.", a: 1000, h: "4 cm x 250 scale index = 1000 cm real length."},
+        {id: 11, q: "(ID) 5 pekerja jahit menyelesaikan pesanan pakaian seragam dalam 12 hari. Jika dikerjakan oleh 6 penjahit?", a: 10, h: "5 orang x 12 hari = 60 produk. Jika 6 orang: 60 / 6 penjahit = 10 hari."},
+        {id: 12, q: "(ID) Skala miniatur pos ronda adalah 1:150. Panjang pos pada model adalah 10cm, tentukan ukuran asli dalam cm.", a: 1500, h: "Skala senilai langsung: 10 cm x 150 = 1500 cm ukuran riil."},
+        {id: 13, q: "(ID) Seseorang mengetik berkecepatan 40 kata/menit selesai dalam 15 jam. Jika kecepatannya naik ke 50 kata/menit?", a: 12, h: "Total kata konstan: 40 x 15 = 600. Jam yang dibutuhkan: 600 / 50 kata = 12 jam."},
+        {id: 14, q: "(ID) Skala peta perkebunan jagung tertera 1:300. Jika jarak denah adalah 7cm, berapakah cm jarak aslinya?", a: 2100, h: "Perkalian skala: 7 cm x 300 = 2100 cm jarak lapangan asli."},
+        {id: 15, q: "(ID) 4 mesin pompa menyedot genangan banjir selesai dalam 9 jam. Jika total mesin ditambah menjadi 6 pompa?", a: 6, h: "Total beban: 4 pompa x 9 jam = 36. Durasi dengan 6 pompa: 36 / 6 = 6 jam."},
+        {id: 16, q: "(ID) Skala peta desa tertulis 1:1000. Jarak jalan utama di peta adalah 5cm, hitunglah jarak asli dalam unit meter.", a: 50, h: "5 cm x 1000 = 5000 cm. Ubah cm ke meter: 5000 / 100 = 50 meter."},
+        {id: 17, q: "(ID) Persediaan beras pondok habis dalam 20 hari untuk 6 orang. Jika anggota bertambah menjadi 8 orang?", a: 15, h: "Stok logistik: 20 hari x 6 orang = 120 porsi. Hari ketahanan: 120 / 8 orang = 15 hari."},
+        {id: 18, q: "(ID) Skala denah kolam ikan emas adalah 1:800. Garis gambar sepanjang 5cm menunjukkan ukuran asli sebesar berapa cm?", a: 4000, h: "Faktor pengali denah: 5 cm x 800 = 4000 cm panjang kolam asli."},
+        {id: 19, q: "(ID) 10 mesin cetak pabrik merampungkan produksi dalam 12 hari. Jika pabrik memakai 15 mesin cetak sejenis?", a: 8, h: "Beban manufaktur: 10 mesin x 12 hari = 120. Hari produksi baru: 120 / 15 mesin = 8 hari."},
+        {id: 20, q: "(ID) Skala maket rancangan jembatan adalah 1:600. Sisi penyangga jembatan 4cm di maket setara berapa cm asli?", a: 2400, h: "Skala denah langsung: 4 cm x 600 = 2400 cm ukuran riil tiang jembatan."}
+    ];
+
+    function generateMatrixGridSystem() {
+        const slotsGrid = document.getElementById('matrix-slots-container');
+        slotsGrid.innerHTML = "";
+        datasetMatrixPool.forEach((item, idx) => {
+            let block = document.createElement('div');
+            block.className = "num-card";
+            block.innerText = item.id;
+            block.id = `mcard-idx-${idx}`;
+            block.onclick = () => selectSpecificMatrixCard(idx);
+            slotsGrid.appendChild(block);
+        });
+    }
+
+    function selectSpecificMatrixCard(idx) {
+        focusedMatrixElementIndex = idx;
+        document.querySelectorAll('.num-card').forEach(card => card.classList.remove('active-card'));
+        document.getElementById(`mcard-idx-${idx}`).classList.add('active-card');
+        
+        document.getElementById('matrix-interactive-panel').style.visibility = "visible";
+        document.getElementById('focus-card-header').innerText = `Card Challenge #${idx + 1}`;
+        document.getElementById('focus-question-body').innerText = datasetMatrixPool[idx].q;
+        
+        let inpEl = document.getElementById('focus-input-element');
+        inpEl.value = "";
+        inpEl.style.backgroundColor = "white";
+        
+        let cardElement = document.getElementById(`mcard-idx-${idx}`);
+        if (cardElement.classList.contains('solved')) {
+            inpEl.disabled = true;
+            document.getElementById('matrix-ignite-btn').disabled = true;
+            document.getElementById('matrix-submit-btn').disabled = true;
+            document.getElementById('matrix-explanation-box').innerText = datasetMatrixPool[idx].h;
+            document.getElementById('matrix-explanation-box').style.display = "block";
+        } else {
+            inpEl.disabled = true;
+            document.getElementById('matrix-ignite-btn').disabled = false;
+            document.getElementById('matrix-submit-btn').disabled = false;
+            document.getElementById('matrix-explanation-box').style.display = "none";
+        }
+        
+        clearInterval(intervalTimerReference);
+        trackerClockCountdown = 180;
+        document.getElementById('matrix-timer-clock').innerText = "03:00";
+        document.getElementById('matrix-timer-clock').style.color = "var(--accent)";
+    }
+
+    function triggerMatrixTimer() {
+        document.getElementById('focus-input-element').disabled = false;
+        document.getElementById('matrix-ignite-btn').disabled = true;
+        cardCalculationTimestamp = Date.now();
+        
+        intervalTimerReference = setInterval(() => {
+            trackerClockCountdown--;
+            let mins = Math.floor(trackerClockCountdown / 60);
+            let secs = trackerClockCountdown % 60;
+            document.getElementById('matrix-timer-clock').innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+            
+            if(trackerClockCountdown <= 30) {
+                document.getElementById('matrix-timer-clock').style.color = "var(--danger)";
+            }
+            if(trackerClockCountdown <= 0) {
+                clearInterval(intervalTimerReference);
+                document.getElementById('focus-input-element').disabled = true;
+                executeVoiceOutput("Time is up!");
+            }
+        }, 1000);
+    }
+
+    function extendMatrixTimer() {
+        if(trackerClockCountdown > 0 && document.getElementById('focus-input-element').disabled === false) {
+            trackerClockCountdown += 15;
+            let mins = Math.floor(trackerClockCountdown / 60);
+            let secs = trackerClockCountdown % 60;
+            document.getElementById('matrix-timer-clock').innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+        }
+    }
+
+    function verifyMatrixCardAnswer() {
+        let inpEl = document.getElementById('focus-input-element');
+        let numericAns = parseInt(inpEl.value);
+        
+        if(numericAns === datasetMatrixPool[focusedMatrixElementIndex].a) {
+            clearInterval(intervalTimerReference);
+            let completedSeconds = Math.floor((Date.now() - cardCalculationTimestamp) / 1000);
+            
+            registeredAnalyticsLogs.push({ cardNum: focusedMatrixElementIndex + 1, duration: completedSeconds });
+            
+            inpEl.style.backgroundColor = "#D1FAE5";
+            inpEl.disabled = true;
+            document.getElementById('matrix-submit-btn').disabled = true;
+            
+            document.getElementById(`mcard-idx-${focusedMatrixElementIndex}`).className = "num-card solved";
+            
+            revealMatrixExplanation();
+            executeVoiceOutput("Correct answer!");
+            rebuildAnalyticsEngineTable();
+        } else {
+            inpEl.style.backgroundColor = "#FEE2E2";
+            executeVoiceOutput("Incorrect answer, try again.");
+        }
+    }
+
+    function revealMatrixExplanation() {
+        let box = document.getElementById('matrix-explanation-box');
+        box.innerText = datasetMatrixPool[focusedMatrixElementIndex].h;
+        box.style.display = "block";
+    }
+
+    /* SLIDE 12: ANALYTICS CALCULATOR ENGINE */
+    function rebuildAnalyticsEngineTable() {
+        const rowsContainer = document.getElementById('analytics-table-rows');
+        rowsContainer.innerHTML = "";
+        let accumulatedSum = 0;
+        
+        if(registeredAnalyticsLogs.length === 0) {
+            rowsContainer.innerHTML = `<tr><td colspan="2" style="padding: 30px; text-align: center; color: #888;">No solved cards tracked yet. Go play Slide 11!</td></tr>`;
+            return;
+        }
+
+        registeredAnalyticsLogs.forEach(entry => {
+            accumulatedSum += entry.duration;
+            rowsContainer.innerHTML += `<tr>
+                <td style='padding: 15px; border-bottom: 1px solid var(--gray); font-weight:bold;'>Card #${entry.cardNum}</td>
+                <td style='padding: 15px; border-bottom: 1px solid var(--gray); font-family: monospace; color: var(--primary); font-size:18px;'>${entry.duration} seconds</td>
+            </tr>`;
+        });
+
+        let mathematicalAverage = accumulatedSum / registeredAnalyticsLogs.length;
+        document.getElementById('analytics-avg-display').innerHTML = `${mathematicalAverage.toFixed(1)}<span style='font-size:25px; color:#555;'>s</span>`;
+    }
+
+    /* INITIALIZATION TRIGGERS */
+    window.onload = () => {
+        selectedSnowWhiteLang = 'en';
+        document.getElementById('snow-story-wrapper').innerHTML = dynamicSnowWhiteNarrative['en'];
+        generateMatrixGridSystem();
+        runGraphEngine(150);
+        nextPracticeQuestion();
+        document.getElementById('case-text').innerText = datasetCaseSorting[0].t;
+    };
+</script>
+</body>
+</html>
