@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisasi Grafik Perbandingan</title>
+    <!-- Tailwind CSS untuk tata letak modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome untuk ikon menarik -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Animasi Transisi Halus antar Halaman */
+        .page-transition {
+            transition: all 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- HEADER/NAVBAR -->
+    <header class="bg-white border-b border-slate-200 py-4 px-6 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('cover')">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-display font-bold text-xl tracking-tight text-indigo-900">GrafikPerbandingan</span>
+                    <span class="text-xs block text-slate-500 font-semibold">Media Pembelajaran Interaktif</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center gap-2">
+                <button onclick="showPage('cover')" class="px-4 py-2 rounded-lg font-semibold text-sm text-slate-600 hover:bg-slate-100 transition">Beranda</button>
+                <button onclick="showPage('senilai')" class="px-4 py-2 rounded-lg font-semibold text-sm text-slate-600 hover:bg-slate-100 transition">Perbandingan Senilai</button>
+                <button onclick="showPage('berbalik')" class="px-4 py-2 rounded-lg font-semibold text-sm text-slate-600 hover:bg-slate-100 transition">Perbandingan Berbalik Nilai</button>
+                <button onclick="showPage('kesimpulan')" class="px-4 py-2 rounded-lg font-semibold text-sm text-slate-600 hover:bg-slate-100 transition">Kesimpulan</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+        <div class="w-full max-w-6xl bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden min-h-[600px] flex flex-col justify-between">
+
+            <!-- PAGE 1: COVER -->
+            <div id="page-cover" class="page-transition p-8 md:p-16 flex flex-col justify-between h-full flex-grow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-auto">
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
+                            <i class="fa-solid fa-graduation-cap"></i> Matematika SMP Kelas VII
+                        </div>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
+                            Memahami Grafik <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Perbandingan</span>
+                        </h1>
+                        
+                        <!-- Pertanyaan Pemantik -->
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-2xl shadow-sm">
+                            <h3 class="font-bold text-amber-900 flex items-center gap-2 mb-1 text-base">
+                                <i class="fa-solid fa-lightbulb"></i> Pertanyaan Pemantik:
+                            </h3>
+                            <p class="text-amber-800 text-sm md:text-base leading-relaxed">
+                                "Pernahkah kamu memperhatikan bagaimana harga total belanjaanmu berubah saat kamu menambah jumlah barang yang dibeli? 
+                                Apakah polanya sama jika kita membandingkan kecepatan berkendara dengan waktu tempuhnya?"
+                            </p>
+                        </div>
+
+                        <p class="text-slate-600 text-base md:text-lg leading-relaxed max-w-xl">
+                            Mari jelajahi koordinat kartesius dan temukan bagaimana visualisasi grafik dari perbandingan senilai dan perbandingan berbalik nilai terbentuk melalui aktivitas interaktif ini!
+                        </p>
+                    </div>
+
+                    <!-- Pilihan Navigasi Menu Utama -->
+                    <div class="lg:col-span-5 flex flex-col gap-4">
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Pilih Materi Eksplorasi:</h3>
+                        
+                        <button onclick="showPage('senilai')" class="group flex items-center justify-between p-6 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-2xl text-left transition-all duration-300 shadow-sm hover:shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-indigo-600 text-white p-3.5 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-arrow-trend-up text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 group-hover:text-indigo-900 transition-colors">Perbandingan Senilai</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Direct Proportion (Garis Lurus)</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all"></i>
+                        </button>
+
+                        <button onclick="showPage('berbalik')" class="group flex items-center justify-between p-6 bg-slate-50 hover:bg-violet-50 border border-slate-200 hover:border-violet-300 rounded-2xl text-left transition-all duration-300 shadow-sm hover:shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-violet-600 text-white p-3.5 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-chart-area text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 group-hover:text-violet-900 transition-colors">Perbandingan Berbalik Nilai</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Inverse Proportion (Garis Lengkung/Kurva)</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 2: PERBANDINGAN SENILAI -->
+            <div id="page-senilai" class="page-transition hidden p-6 md:p-8 flex flex-col justify-between h-full flex-grow">
+                <div>
+                    <!-- Header Topik -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div>
+                            <div class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">Topik Utama 1</div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Perbandingan Senilai (Direct Proportion)</h2>
+                        </div>
+                        <div class="mt-2 md:mt-0 flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-xl text-indigo-700 font-semibold text-sm">
+                            <i class="fa-solid fa-scale-balanced"></i> Rasio Tetap (y / x = k)
+                        </div>
+                    </div>
+
+                    <!-- Grid Eksplorasi -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <!-- Kolom Kiri: Kasus dan Input Tabel -->
+                        <div class="lg:col-span-5 space-y-6">
+                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                                <h3 class="font-bold text-slate-900 mb-2 text-base"><i class="fa-solid fa-store text-indigo-600 mr-2"></i>Kasus Riil: Pembelian Buku Tulis</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Andi membeli buku tulis di koperasi sekolah. Harga <span class="font-bold text-indigo-600">1 buku adalah Rp 5.000</span>. 
+                                    Jika Andi membeli lebih banyak buku, harga total yang harus dibayar juga akan meningkat dengan rasio yang sama.
+                                </p>
+                                <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span class="block text-slate-400 font-semibold uppercase mb-1">Sumbu X (Horizontal)</span>
+                                        <span class="font-bold text-slate-700 text-sm">Banyak Buku (Pcs)</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span class="block text-slate-400 font-semibold uppercase mb-1">Sumbu Y (Vertikal)</span>
+                                        <span class="font-bold text-slate-700 text-sm">Harga Total (Ribu Rp)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabel Interaktif -->
+                            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                                <div class="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                                    <span class="font-bold text-sm text-slate-700">Lengkapi Tabel Koordinat Kartesius</span>
+                                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold">1 Buku = Rp 5.000</span>
+                                </div>
+                                <table class="w-full text-sm text-left text-slate-600">
+                                    <thead class="bg-slate-100/50 text-slate-700 text-xs uppercase font-bold">
+                                        <tr>
+                                            <th class="px-4 py-3">Banyak Buku (x)</th>
+                                            <th class="px-4 py-3">Harga dalam Ribu (y)</th>
+                                            <th class="px-4 py-3">Koordinat (x, y)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">1</td>
+                                            <td class="px-4 py-3 font-bold text-indigo-600">5</td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(1, 5)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">2</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="senilai-y1" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="... ribu">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(2, y<sub>1</sub>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">3</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="senilai-y2" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="... ribu">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(3, y<sub>2</sub>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">4</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="senilai-y3" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="... ribu">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(4, y<sub>3</sub>)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                                    <div id="senilai-feedback" class="text-sm font-semibold flex items-center gap-2">
+                                        <!-- Pesan feedback dinamis -->
+                                    </div>
+                                    <button onclick="checkSenilaiAnswers()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-md shadow-indigo-100 flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-check"></i> Cek Jawaban
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kolom Kanan: Visualisasi Grafik Kartesius -->
+                        <div class="lg:col-span-7 flex flex-col items-center">
+                            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 w-full flex flex-col items-center">
+                                <span class="font-display font-bold text-sm text-slate-500 mb-4 tracking-wide uppercase"><i class="fa-solid fa-chart-line text-indigo-600 mr-1"></i> Grafik Koordinat Kartesius</span>
+                                <div class="relative bg-white p-4 rounded-2xl border border-slate-200 shadow-sm w-full aspect-square max-w-[420px] flex items-center justify-center">
+                                    <!-- Canvas untuk Grafik -->
+                                    <canvas id="canvas-senilai" width="400" height="400" class="w-full h-full"></canvas>
+                                </div>
+                                <div class="mt-4 text-xs text-slate-500 text-center max-w-sm">
+                                    <span class="font-bold text-indigo-600">Garis Lurus (Linear)</span> yang melewati titik pusat (0,0) membuktikan rasio harga per buku bernilai konstan.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigasi -->
+                <div class="mt-8 flex justify-between items-center border-t border-slate-100 pt-6">
+                    <button onclick="showPage('cover')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu
+                    </button>
+                    <button id="btn-next-senilai" onclick="showPage('berbalik')" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition opacity-50 cursor-not-allowed flex items-center gap-2" disabled>
+                        Materi Berikutnya <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PAGE 3: PERBANDINGAN BERBALIK NILAI -->
+            <div id="page-berbalik" class="page-transition hidden p-6 md:p-8 flex flex-col justify-between h-full flex-grow">
+                <div>
+                    <!-- Header Topik -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div>
+                            <div class="text-xs font-bold text-violet-600 uppercase tracking-widest mb-1">Topik Utama 2</div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Perbandingan Berbalik Nilai (Inverse Proportion)</h2>
+                        </div>
+                        <div class="mt-2 md:mt-0 flex items-center gap-2 bg-violet-50 border border-violet-100 px-4 py-2 rounded-xl text-violet-700 font-semibold text-sm">
+                            <i class="fa-solid fa-scale-unbalanced"></i> Hasil Kali Konstan (x × y = k)
+                        </div>
+                    </div>
+
+                    <!-- Grid Eksplorasi -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <!-- Kolom Kiri: Kasus dan Input Tabel -->
+                        <div class="lg:col-span-5 space-y-6">
+                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                                <h3 class="font-bold text-slate-900 mb-2 text-base"><i class="fa-solid fa-car text-violet-600 mr-2"></i>Kasus Riil: Kecepatan dan Waktu Tempuh</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed mb-3">
+                                    Sebuah mobil menempuh jarak konstan sejauh <span class="font-bold text-violet-600">60 km</span>. 
+                                    Jika kecepatan bertambah, waktu tempuh otomatis berkurang. 
+                                </p>
+                                <div class="bg-violet-100/60 p-3 rounded-xl border border-violet-200 flex items-center gap-3">
+                                    <span class="text-xs font-bold text-violet-800">Rumus Waktu:</span>
+                                    <span class="text-xs font-mono bg-white px-2 py-1 rounded font-bold border border-violet-300">Waktu (y) = 60 / Kecepatan (x)</span>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span class="block text-slate-400 font-semibold uppercase mb-1">Sumbu X (Horizontal)</span>
+                                        <span class="font-bold text-slate-700 text-sm">Kecepatan (km/jam)</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span class="block text-slate-400 font-semibold uppercase mb-1">Sumbu Y (Vertikal)</span>
+                                        <span class="font-bold text-slate-700 text-sm">Waktu Tempuh (Jam)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabel Interaktif -->
+                            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                                <div class="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                                    <span class="font-bold text-sm text-slate-700">Lengkapi Tabel Koordinat Kartesius</span>
+                                    <span class="text-xs bg-violet-100 text-violet-800 px-2 py-0.5 rounded font-bold">Jarak = 60 km</span>
+                                </div>
+                                <table class="w-full text-sm text-left text-slate-600">
+                                    <thead class="bg-slate-100/50 text-slate-700 text-xs uppercase font-bold">
+                                        <tr>
+                                            <th class="px-4 py-3">Kecepatan (x)</th>
+                                            <th class="px-4 py-3">Waktu (y)</th>
+                                            <th class="px-4 py-3">Koordinat (x, y)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">10 km/jam</td>
+                                            <td class="px-4 py-3 font-bold text-violet-600">6 jam</td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(10, 6)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">20 km/jam</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="berbalik-y1" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition" placeholder="... jam">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(20, y<sub>1</sub>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">30 km/jam</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="berbalik-y2" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition" placeholder="... jam">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(30, y<sub>2</sub>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-slate-900">60 km/jam</td>
+                                            <td class="px-4 py-3">
+                                                <input type="number" id="berbalik-y3" class="w-20 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition" placeholder="... jam">
+                                            </td>
+                                            <td class="px-4 py-3 text-xs font-mono text-slate-500">(60, y<sub>3</sub>)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                                    <div id="berbalik-feedback" class="text-sm font-semibold flex items-center gap-2">
+                                        <!-- Pesan feedback dinamis -->
+                                    </div>
+                                    <button onclick="checkBerbalikAnswers()" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm rounded-xl transition shadow-md shadow-violet-100 flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-check"></i> Cek Jawaban
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kolom Kanan: Visualisasi Grafik Kartesius -->
+                        <div class="lg:col-span-7 flex flex-col items-center">
+                            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 w-full flex flex-col items-center">
+                                <span class="font-display font-bold text-sm text-slate-500 mb-4 tracking-wide uppercase"><i class="fa-solid fa-chart-line text-violet-600 mr-1"></i> Grafik Koordinat Kartesius</span>
+                                <div class="relative bg-white p-4 rounded-2xl border border-slate-200 shadow-sm w-full aspect-square max-w-[420px] flex items-center justify-center">
+                                    <!-- Canvas untuk Grafik -->
+                                    <canvas id="canvas-berbalik" width="400" height="400" class="w-full h-full"></canvas>
+                                </div>
+                                <div class="mt-4 text-xs text-slate-500 text-center max-w-sm">
+                                    Grafik perbandingan berbalik nilai menghasilkan <span class="font-bold text-violet-600">Garis Lengkung (Hiperbola)</span> yang tidak pernah menyentuh sumbu X maupun sumbu Y.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigasi -->
+                <div class="mt-8 flex justify-between items-center border-t border-slate-100 pt-6">
+                    <button onclick="showPage('senilai')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Senilai
+                    </button>
+                    <button id="btn-next-berbalik" onclick="showPage('kesimpulan')" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition opacity-50 cursor-not-allowed flex items-center gap-2" disabled>
+                        Kesimpulan & Perbedaan <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PAGE 4: KESIMPULAN & PERBEDAAN -->
+            <div id="page-kesimpulan" class="page-transition hidden p-6 md:p-8 flex flex-col justify-between h-full flex-grow">
+                <div>
+                    <!-- Header Topik -->
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <div class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Rangkuman Akhir</div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Perbedaan Grafik Perbandingan</h2>
+                    </div>
+
+                    <!-- Layout Tabel Rangkuman Visual -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-auto">
+                        <!-- Perbandingan Senilai Box -->
+                        <div class="bg-indigo-50/50 rounded-2xl p-6 border-2 border-indigo-200/60 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="bg-indigo-600 text-white p-2.5 rounded-lg">
+                                        <i class="fa-solid fa-arrow-trend-up"></i>
+                                    </div>
+                                    <h3 class="font-bold text-indigo-950 text-xl">Perbandingan Senilai</h3>
+                                </div>
+                                <ul class="space-y-4 text-sm text-slate-700">
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-indigo-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Jika nilai <span class="font-bold">x naik</span>, maka nilai <span class="font-bold">y juga naik</span> dengan proporsi yang sama.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-indigo-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Persamaan umum: <span class="font-bold font-mono">y = k · x</span> (atau y / x = k konstan).</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-indigo-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Bentuk Grafik: <span class="font-bold text-indigo-700">Garis lurus linear</span> yang melewati koordinat origin (0,0).</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-indigo-100/80 flex items-center gap-3">
+                                <span class="text-xs font-semibold text-indigo-700">Contoh Grafis:</span>
+                                <div class="w-16 h-1 bg-indigo-600 rounded"></div>
+                                <span class="text-xs font-mono bg-indigo-100/80 px-2 py-0.5 rounded text-indigo-900">Linear Slope</span>
+                            </div>
+                        </div>
+
+                        <!-- Perbandingan Berbalik Nilai Box -->
+                        <div class="bg-violet-50/50 rounded-2xl p-6 border-2 border-violet-200/60 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="bg-violet-600 text-white p-2.5 rounded-lg">
+                                        <i class="fa-solid fa-scale-unbalanced"></i>
+                                    </div>
+                                    <h3 class="font-bold text-violet-950 text-xl">Perbandingan Berbalik Nilai</h3>
+                                </div>
+                                <ul class="space-y-4 text-sm text-slate-700">
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-violet-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Jika nilai <span class="font-bold">x naik</span>, maka nilai <span class="font-bold">y turun</span> dengan proporsi terbalik.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-violet-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Persamaan umum: <span class="font-bold font-mono">x · y = k</span> (atau y = k / x).</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-circle text-violet-500 text-[10px] mt-1.5 flex-shrink-0"></i>
+                                        <span>Bentuk Grafik: <span class="font-bold text-violet-700">Garis lengkung (hiperbola)</span> mulus yang menjauhi sumbu.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-violet-100/80 flex items-center gap-3">
+                                <span class="text-xs font-semibold text-violet-700">Contoh Grafis:</span>
+                                <div class="w-16 h-4 border-b-2 border-l-2 border-violet-600 rounded-bl-2xl"></div>
+                                <span class="text-xs font-mono bg-violet-100/80 px-2 py-0.5 rounded text-violet-900">Hyperbolic Curve</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigasi -->
+                <div class="mt-8 flex justify-between items-center border-t border-slate-100 pt-6">
+                    <button onclick="showPage('berbalik')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Berbalik Nilai
+                    </button>
+                    <button onclick="showPage('cover')" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang Eksplorasi
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs border-t border-slate-800">
+        <p>© 2026 Media Pembelajaran Interaktif Matematika • Didesain untuk Kurikulum Merdeka</p>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT & DRAWING CANVAS -->
+    <script>
+        // State Keadaan Halaman & Validasi
+        let isSenilaiCorrect = false;
+        let isBerbalikCorrect = false;
+
+        // Inisialisasi awal saat window dimuat
+        window.onload = function() {
+            showPage('cover');
+        };
+
+        // Fungsi berpindah halaman secara dinamis
+        function showPage(pageId) {
+            // Sembunyikan seluruh halaman
+            document.getElementById('page-cover').classList.add('hidden');
+            document.getElementById('page-senilai').classList.add('hidden');
+            document.getElementById('page-berbalik').classList.add('hidden');
+            document.getElementById('page-kesimpulan').classList.add('hidden');
+
+            // Tampilkan halaman aktif
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+
+            // Render grafik sesuai halaman yang dipilih
+            if (pageId === 'senilai') {
+                drawSenilaiGraph();
+            } else if (pageId === 'berbalik') {
+                drawBerbalikGraph();
+            }
+        }
+
+        // --- SISTEM TEXT TO SPEECH (TTS) INDONESIA ---
+        function speakFeedback(text) {
+            if ('speechSynthesis' in window) {
+                // Batalkan proses bicara sebelumnya agar tidak bertumpuk
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // --- SECTION 1: PERBANDINGAN SENILAI ---
+        function checkSenilaiAnswers() {
+            const y1 = parseInt(document.getElementById('senilai-y1').value);
+            const y2 = parseInt(document.getElementById('senilai-y2').value);
+            const y3 = parseInt(document.getElementById('senilai-y3').value);
+            const feedbackEl = document.getElementById('senilai-feedback');
+
+            // Kunci jawaban: y = 5x. Maka untuk x=2 -> y=10; x=3 -> y=15; x=4 -> y=20
+            if (y1 === 10 && y2 === 15 && y3 === 20) {
+                isSenilaiCorrect = true;
+                feedbackEl.className = "text-sm font-semibold flex items-center gap-2 text-emerald-600";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Good Job! Grafik berhasil di-plot.`;
+                
+                // Warnai input menjadi hijau
+                document.getElementById('senilai-y1').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+                document.getElementById('senilai-y2').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+                document.getElementById('senilai-y3').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+
+                // Aktifkan tombol materi berikutnya
+                const nextBtn = document.getElementById('btn-next-senilai');
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // Mengeluarkan suara
+                speakFeedback("Good job! Berikut grafik dari perbandingan senilai.");
+                
+                // Gambar ulang grafik dengan menyertakan plot garis penuh
+                drawSenilaiGraph(true);
+            } else {
+                isSenilaiCorrect = false;
+                feedbackEl.className = "text-sm font-semibold flex items-center gap-2 text-rose-600";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Try again! Periksa hitunganmu.`;
+                
+                // Beri efek warna salah pada input yang kosong atau tidak tepat
+                highlightIncorrectInputs('senilai-y1', 10);
+                highlightIncorrectInputs('senilai-y2', 15);
+                highlightIncorrectInputs('senilai-y3', 20);
+
+                speakFeedback("Try kembali.");
+                drawSenilaiGraph(false);
+            }
+        }
+
+        // --- SECTION 2: PERBANDINGAN BERBALIK NILAI ---
+        function checkBerbalikAnswers() {
+            const y1 = parseInt(document.getElementById('berbalik-y1').value);
+            const y2 = parseInt(document.getElementById('berbalik-y2').value);
+            const y3 = parseInt(document.getElementById('berbalik-y3').value);
+            const feedbackEl = document.getElementById('berbalik-feedback');
+
+            // Kunci jawaban: y = 60/x. Maka untuk x=20 -> y=3; x=30 -> y=2; x=60 -> y=1
+            if (y1 === 3 && y2 === 2 && y3 === 1) {
+                isBerbalikCorrect = true;
+                feedbackEl.className = "text-sm font-semibold flex items-center gap-2 text-emerald-600";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Good Job! Kurva hiperbola di-plot.`;
+                
+                // Warnai input menjadi hijau
+                document.getElementById('berbalik-y1').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+                document.getElementById('berbalik-y2').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+                document.getElementById('berbalik-y3').className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+
+                // Aktifkan tombol materi berikutnya
+                const nextBtn = document.getElementById('btn-next-berbalik');
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                speakFeedback("Good job! Berikut grafik dari perbandingan berbalik nilai.");
+                drawBerbalikGraph(true);
+            } else {
+                isBerbalikCorrect = false;
+                feedbackEl.className = "text-sm font-semibold flex items-center gap-2 text-rose-600";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Try again! Coba hitung y = 60 / x.`;
+                
+                // Beri efek warna salah
+                highlightIncorrectInputs('berbalik-y1', 3);
+                highlightIncorrectInputs('berbalik-y2', 2);
+                highlightIncorrectInputs('berbalik-y3', 1);
+
+                speakFeedback("Try kembali.");
+                drawBerbalikGraph(false);
+            }
+        }
+
+        // Helper highlight input yang keliru
+        function highlightIncorrectInputs(id, correctVal) {
+            const input = document.getElementById(id);
+            const val = parseInt(input.value);
+            if (val === correctVal) {
+                input.className = "w-20 px-3 py-1.5 border border-emerald-300 bg-emerald-50 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-emerald-700";
+            } else {
+                input.className = "w-20 px-3 py-1.5 border border-rose-300 bg-rose-50 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none font-bold text-rose-700";
+            }
+        }
+
+
+        // ==========================================
+        //  FUNGSI GAMBAR GRAFIK (CANVAS RENDERING)
+        // ==========================================
+
+        // 1. Gambar Grafik Perbandingan Senilai
+        function drawSenilaiGraph(showLine = false) {
+            const canvas = document.getElementById('canvas-senilai');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Bersihkan Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Margin & Padding Area Gambar Kartesius
+            const padLeft = 45;
+            const padBottom = 40;
+            const padRight = 20;
+            const padTop = 30;
+            
+            const graphWidth = canvas.width - padLeft - padRight;
+            const graphHeight = canvas.height - padBottom - padTop;
+
+            // Batas Maksimum Nilai Sumbu
+            const maxValX = 5;  // Buku maks 5
+            const maxValY = 25; // Harga maks 25 ribu
+
+            // --- A. Gambar Grid Sumbu ---
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            
+            // Grid Vertikal (X)
+            for (let i = 1; i <= maxValX; i++) {
+                let x = padLeft + (i / maxValX) * graphWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, padTop);
+                ctx.lineTo(x, canvas.height - padBottom);
+                ctx.stroke();
+
+                // Label Angka Sumbu X
+                ctx.fillStyle = '#64748b';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(i, x, canvas.height - padBottom + 18);
+            }
+
+            // Grid Horizontal (Y)
+            for (let i = 5; i <= maxValY; i += 5) {
+                let y = canvas.height - padBottom - (i / maxValY) * graphHeight;
+                ctx.beginPath();
+                ctx.moveTo(padLeft, y);
+                ctx.lineTo(canvas.width - padRight, y);
+                ctx.stroke();
+
+                // Label Angka Sumbu Y
+                ctx.fillStyle = '#64748b';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(i + "K", padLeft - 8, y + 4);
+            }
+
+            // --- B. Gambar Garis Sumbu Utama (X & Y Axis) ---
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2.5;
+            
+            // Sumbu Y Utama
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop - 10);
+            ctx.lineTo(padLeft, canvas.height - padBottom);
+            ctx.stroke();
+
+            // Sumbu X Utama
+            ctx.beginPath();
+            ctx.moveTo(padLeft, canvas.height - padBottom);
+            ctx.lineTo(canvas.width - padRight + 10, canvas.height - padBottom);
+            ctx.stroke();
+
+            // Sumbu Panah Indikator
+            ctx.fillStyle = '#334155';
+            // Panah Y
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop - 15);
+            ctx.lineTo(padLeft - 5, padTop - 8);
+            ctx.lineTo(padLeft + 5, padTop - 8);
+            ctx.fill();
+            // Panah X
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - padRight + 15, canvas.height - padBottom);
+            ctx.lineTo(canvas.width - padRight + 8, canvas.height - padBottom - 5);
+            ctx.lineTo(canvas.width - padRight + 8, canvas.height - padBottom + 5);
+            ctx.fill();
+
+            // Label Sumbu
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillStyle = '#1e293b';
+            ctx.textAlign = 'left';
+            ctx.fillText("Buku (x)", canvas.width - padRight - 35, canvas.height - padBottom - 10);
+            
+            ctx.save();
+            ctx.translate(padLeft + 15, padTop + 25);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText("Harga total (y)", 0, 0);
+            ctx.restore();
+
+            // --- C. Plot Titik Koordinat ---
+            const points = [
+                {x: 1, y: 5},
+                {x: 2, y: 10},
+                {x: 3, y: 15},
+                {x: 4, y: 20}
+            ];
+
+            points.forEach(pt => {
+                let pX = padLeft + (pt.x / maxValX) * graphWidth;
+                let pY = canvas.height - padBottom - (pt.y / maxValY) * graphHeight;
+
+                ctx.beginPath();
+                ctx.arc(pX, pY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = showLine ? '#4f46e5' : '#cbd5e1';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            });
+
+            // --- D. Tarik Garis Linear ---
+            if (showLine) {
+                ctx.beginPath();
+                // Mulai dari titik asal (0,0) ke (5, 25)
+                ctx.moveTo(padLeft, canvas.height - padBottom);
+                let endX = padLeft + (5 / maxValX) * graphWidth;
+                let endY = canvas.height - padBottom - (25 / maxValY) * graphHeight;
+                ctx.lineTo(endX, endY);
+                
+                ctx.strokeStyle = '#4f46e5';
+                ctx.lineWidth = 3;
+                ctx.lineCap = "round";
+                ctx.stroke();
+            }
+        }
+
+        // 2. Gambar Grafik Perbandingan Berbalik Nilai
+        function drawBerbalikGraph(showCurve = false) {
+            const canvas = document.getElementById('canvas-berbalik');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Bersihkan Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const padLeft = 45;
+            const padBottom = 40;
+            const padRight = 20;
+            const padTop = 30;
+            
+            const graphWidth = canvas.width - padLeft - padRight;
+            const graphHeight = canvas.height - padBottom - padTop;
+
+            const maxValX = 80; // Kecepatan maks 80 km/jam
+            const maxValY = 8;  // Waktu maks 8 jam
+
+            // --- A. Gambar Grid Sumbu ---
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            
+            // Grid Vertikal (X)
+            const xSteps = [10, 20, 30, 40, 50, 60, 70, 80];
+            xSteps.forEach(step => {
+                let x = padLeft + (step / maxValX) * graphWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, padTop);
+                ctx.lineTo(x, canvas.height - padBottom);
+                ctx.stroke();
+
+                // Label Angka Sumbu X
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(step, x, canvas.height - padBottom + 18);
+            });
+
+            // Grid Horizontal (Y)
+            for (let i = 1; i <= maxValY; i++) {
+                let y = canvas.height - padBottom - (i / maxValY) * graphHeight;
+                ctx.beginPath();
+                ctx.moveTo(padLeft, y);
+                ctx.lineTo(canvas.width - padRight, y);
+                ctx.stroke();
+
+                // Label Angka Sumbu Y
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(i + "j", padLeft - 8, y + 3);
+            }
+
+            // --- B. Gambar Sumbu Utama ---
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2.5;
+            
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop - 10);
+            ctx.lineTo(padLeft, canvas.height - padBottom);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(padLeft, canvas.height - padBottom);
+            ctx.lineTo(canvas.width - padRight + 10, canvas.height - padBottom);
+            ctx.stroke();
+
+            // Panah
+            ctx.fillStyle = '#334155';
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop - 15);
+            ctx.lineTo(padLeft - 5, padTop - 8);
+            ctx.lineTo(padLeft + 5, padTop - 8);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - padRight + 15, canvas.height - padBottom);
+            ctx.lineTo(canvas.width - padRight + 8, canvas.height - padBottom - 5);
+            ctx.lineTo(canvas.width - padRight + 8, canvas.height - padBottom + 5);
+            ctx.fill();
+
+            // Label Sumbu
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillStyle = '#1e293b';
+            ctx.textAlign = 'left';
+            ctx.fillText("Kecepatan (x)", canvas.width - padRight - 65, canvas.height - padBottom - 10);
+            
+            ctx.save();
+            ctx.translate(padLeft + 15, padTop + 25);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText("Waktu (y)", 0, 0);
+            ctx.restore();
+
+            // --- C. Plot Titik Koordinat (10, 6), (20, 3), (30, 2), (60, 1) ---
+            const points = [
+                {x: 10, y: 6},
+                {x: 20, y: 3},
+                {x: 30, y: 2},
+                {x: 60, y: 1}
+            ];
+
+            points.forEach(pt => {
+                let pX = padLeft + (pt.x / maxValX) * graphWidth;
+                let pY = canvas.height - padBottom - (pt.y / maxValY) * graphHeight;
+
+                ctx.beginPath();
+                ctx.arc(pX, pY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = showCurve ? '#7c3aed' : '#cbd5e1';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            });
+
+            // --- D. Tarik Garis Lengkung Hiperbola (Smooth Bezier) ---
+            if (showCurve) {
+                ctx.beginPath();
+                
+                // Mengambil sampel kurva secara rapat untuk hasil yang presisi dan tidak patah-patah
+                let started = false;
+                for (let xVal = 8; xVal <= 78; xVal += 1) {
+                    let yVal = 60 / xVal;
+                    
+                    let drawX = padLeft + (xVal / maxValX) * graphWidth;
+                    let drawY = canvas.height - padBottom - (yVal / maxValY) * graphHeight;
+
+                    if (!started) {
+                        ctx.moveTo(drawX, drawY);
+                        started = true;
+                    } else {
+                        ctx.lineTo(drawX, drawY);
+                    }
+                }
+
+                ctx.strokeStyle = '#7c3aed';
+                ctx.lineWidth = 3;
+                ctx.lineCap = "round";
+                ctx.stroke();
+            }
+        }
+    </script>
+</body>
+</html>
